@@ -12,7 +12,7 @@ os.environ['PROJECT_PATH'] = path
 sys.path.insert(0, path)
 
 from modules.pipeline import pipeline
-# <YOUR_IMPORTS>
+from modules.predict import predict
 
 args = {
     'owner': 'airflow',
@@ -24,12 +24,16 @@ args = {
 
 with DAG(
         dag_id='car_price_prediction',
-        schedule_interval="00 15 * * *",
+        schedule="00 15 * * *",
         default_args=args,
 ) as dag:
     pipeline = PythonOperator(
         task_id='pipeline',
         python_callable=pipeline,
     )
-    # <YOUR_CODE>
+    predict = PythonOperator(
+        task_id='predict',
+        python_callable=predict,
+    )
+    pipeline >> predict
 
